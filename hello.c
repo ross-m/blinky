@@ -3,7 +3,7 @@
 #include "inc/hw_memmap.h"
 
 #define RCGCGPIO_R *(volatile uint32_t*) 0x400FE608 // SYSCTL clock register for port F
-#define GPIODIR_F_R *(volatile uint32_t*) 0x4005D400
+#define GPIODIR_F_R *(volatile uint32_t*) 0x4005D400 // IO direction pin for port F
 
 void initLED(void)
 {
