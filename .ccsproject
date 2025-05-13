@@ -11,6 +11,7 @@
 	<createSlaveProjects value=""/>
 	<filesToOpen value=""/>
 	<origin value="C:/ti/TivaWare_C_Series-2.2.0.295/examples/boards/ek-tm4c123gxl/hello/ccs"/>
-	<activeTargetConfiguration value="target_config.ccxml"/>
-	<isTargetConfigurationManual value="true"/>
+	<activeTargetConfiguration value="targetConfigs/Tiva TM4C123GH6PM.ccxml"/>
+	<isTargetConfigurationManual value="false"/>
+	<connection value="common/targetdb/connections/Stellaris_ICDI_Connection.xml"/>
 </projectOptions>
