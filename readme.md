@@ -14,10 +14,7 @@
 
 ---
 
-### 📅 Date: 2025-05-10
-
-**Commit Message:**  
-`Configured the PF1 pin for digital GPIO output`
+### Date: 2025-05-10
 
 **Goal for the Day:**  
 - `Get the pin ready for blinking, figure out how to read the datasheet + what needs to be configured.`
@@ -46,10 +43,7 @@ pins are flexible pins that can be re-used for different functions. In our case 
 tells the LED to turn on and off.
 
 
-### 📅 Date: 2025-05-12
-
-**Commit Message:**  
-`Blinked the LED!`
+### Date: 2025-05-12
 
 **Goal for the Day:**  
 - `Finish configuring pin PF1`
@@ -88,5 +82,8 @@ After re-reading that section during debugging, I realized my mistake.
 My overall takeway is that the datasheet is the embedded programmer's bible. Everything I needed was in there,
 I just needed to slow down and pay closer attention to the details.
 
+### Date: 2025-05-13
 
+**Next steps:**  
+- `Feeling a little stumped. On my next commit, I will hopefully be able to explain why. Right now the LED is stuck on.`
 ---

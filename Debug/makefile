@@ -10,7 +10,7 @@ GEN_OPTS__FLAG :=
 GEN_CMDS__FLAG := 
 
 ORDERED_OBJS += \
-"./hello.obj" \
+"./main.obj" \
 "./tm4c123gh6pm_startup_ccs.obj" \
 "./utils/uartstdio.obj" \
 "../hello_ccs.cmd" \
@@ -146,8 +146,8 @@ car_telemetry.out: $(OBJS) $(CMD_SRCS) $(GEN_CMDS)
 # Other Targets
 clean:
 	-$(RM) $(EXE_OUTPUTS__QUOTED)
-	-$(RM) "hello.obj" "tm4c123gh6pm_startup_ccs.obj" "utils\uartstdio.obj" 
-	-$(RM) "hello.d" "tm4c123gh6pm_startup_ccs.d" "utils\uartstdio.d" 
+	-$(RM) "main.obj" "tm4c123gh6pm_startup_ccs.obj" "utils\uartstdio.obj" 
+	-$(RM) "main.d" "tm4c123gh6pm_startup_ccs.d" "utils\uartstdio.d" 
 	-@echo 'Finished clean'
 	-@echo ' '
 
