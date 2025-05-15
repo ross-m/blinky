@@ -116,4 +116,36 @@ When I ctrl-Z'd to see what I did before, I found that I had been passing too la
 passing 160,000,000, but I explicitly reject values that exceed the maximum of the STRELOAD register (2^24 - 1, or 16,777,216). I read in 
 section 5.2.5.1 that the Precision Internal Oscillator is the default system clock after Power-on Reset (PON), and that it runs at 16 MHz, so I was aiming for that. I discovered that my edge condition checking was working - thereby breaking the delay logic - by placing a breakpoint on my second call to delay (in between the blinks) and using CCS's debugger.
 
+### Date: 2025-05-14
+
+**Goal for the Day:**  
+- `Change my timer function to be time-based instead of clock-based`
+
+**Actions Taken:**  
+- `Re-structured the timer function`
+- `Changed documentation structure of functions`
+
+**Technical Details:**  
+- `Polled the count bit on STCTRL register`
+- `Measured time using the SysTick timer`
+
+**Outcome:**  
+- `Success`
+
+**Next steps:**  
+- `Reorganize everything`
+- `Maybe add button debouncing to learn interrupts`
+
+**Reflection:**
+
+I realized it didn't make very much sense to measure real-world stuff with clock cycles. That was useful when I needed to wait precisely
+three cycles for port F to have its clock enabled, but for blinking the LED, time is a more appropriate measure. It wasn't too difficult
+to do after writing the first version. I knew that I could determine when a millisecond had elapsed by loading a millisecond's worth of ticks into
+STRELOAD, and that I could count how many times that happened with a looping variable. 
+
+However, I also realized that this was an imprecise way of measuring time. The count bit could be set while we're in the middle of executing arbitrary
+CPU instructions for the looping code, so we're unlikely to execute the masking instructions exactly at the moment STCURRENT wraps. This was okay for 
+my purposes because the delay would be imperceptably small in the context of blinking an LED. Since each instruction in the loop probably takes no more than 
+a handful of clock cycles, and there are likely no more than a few such instructions, the delay is likely on the order of nanoseconds, ie (1 second / 16,000,000 cycles) = 6.25 e^-10 seconds per cycle * average 5 cycles per instruction * ~100 instructions between reads, ballpark conservative estimate) is on the order
+of 10^-9. I could probably get precise figures if I read the assembly and read the documentation for the instruction set, but that's way too deep for what I'm doing. Maybe some day.
 ---
