@@ -19,40 +19,53 @@
 #define STRELOAD *(volatile uint32_t*) 0xE000E014 // the reload value. this is how many clock cycles elapse before it is reset
 #define STCURRENT *(volatile uint32_t*) 0xE000E018 // the value of the register currently. writes clear the register and the count status bit
 #define COUNTMASK 0x00010000 // Access the 16th bit (count bit) of STCTRL
+#define CYCLESPMS 16000 // 16,000,000 cycles per second * 0.001 seconds per millisecond
+#define MAXCYCLES 0xFFFFFF // number of cycles we can represent with 23 bits
 
-// Wait at least *cycleCount* cycles. "At least" because there's no way to guarantee the counter
-// will be read precisely at the moment it first wraps.
-void waitForCycleCount(volatile uint32_t cycleCount)
+/* Purpose: Block CPU for approximately *ms* milliseconds. Resolution is fuzzy because of the polling: the read is not guaranteed
+*            to occur exactly when the wrap does because of the cycles consumed executing the looping instructions. For precise timing
+*            needs, use an interrupt.
+*  Parameters: ms - the number of milliseconds to wait for. Can't wait more than UINT32_MAX milliseconds because of implementation.
+*  Returns: void
+*/
+void delayByMs(volatile uint32_t ms)
 {
-    if (cycleCount >= 0x1000000) // STRELOAD only reserves bits 0-23, so block any value beyond or including 2^24
+    if (ms > UINT32_MAX)
     {
         return;
     }
 
-    // set the reload value
-    STRELOAD = cycleCount - 1; // Timer counts the 0th tick
+    volatile uint32_t remainingMs = ms;
 
-    // clear the cur value register
-    STCURRENT &= 0xFFFFFFFF;
+    // Wait 1 MS at a time
+    STRELOAD = CYCLESPMS;
 
-    // configure the STCTRL register for system clock (bit 2, 1), interrupt gen off (bit 1, 0), and timer on (bit 0, 1)
-    STCTRL |= 0x5; 
+    // clear the cur value register by writing an arbitrary value
+    STCURRENT |= 0x1;
 
-    // Wait until at least a single wrap has occurred (which guarantees AT LEAST *cycleCount* cycles have elapsed)
-    while ((STCTRL & COUNTMASK) == 0);
+    // configure the counter for non-interrupt mode and 80 MHz clock system clock backing
+    STCTRL |= 0x5;
 
-    // clear the cur value register
-    STCURRENT &= 0xFFFFFFFF;
+    while (remainingMs > 0)
+    {
+        if ((STCTRL & COUNTMASK) != 0) // works because the count bit clears on read
+        {
+            remainingMs--;
+        }
+    }
 
-    // disable the lowest 3 bits of the STCTRL register, disabling / resetting the timer
+    // disable the timer
     STCTRL &= ~(0x7);
 }
 
-// Initialize the red LED by configuring PF1 for digital output, etc
+/* Purpose: Initialize the red LED.
+*  Parameters: void
+*  Returns: void
+*/
 void initLED(void)
 {
     RCGCGPIO_R |= 0x20; // Enable the clock on port F
-    waitForCycleCount(10); // datasheet says 3 clocks, but lets do 10 to be safe
+    delayByMs(1); // definitely consuming at least 3 cycles here
 
     SYSCTL_GPIOHBCTL_R |= 0x20; // Enable AHB for Port F
     GPIODIR_F_R |= 0x02; // Set LED pin to output mode
@@ -61,15 +74,18 @@ void initLED(void)
     GPIODEN_F_R |= 0x02; // Configure pin in digital mode (since we're sending discrete voltages for blinking)
 }
 
-// Initialize and blink the LED
+/* Purpose: Initialize and blink the LED. Main entry point.
+*  Parameters: void
+*  Returns: void
+*/
 int main(void) {
     initLED();
 
     while (1)
     {
         LED_ON();
-        waitForCycleCount(16000000); // wait
+        delayByMs(1000);
         LED_OFF();
-        waitForCycleCount(16000000); // wait
+        delayByMs(1000);
     }
 }
