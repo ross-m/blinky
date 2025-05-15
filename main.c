@@ -68,8 +68,8 @@ int main(void) {
     while (1)
     {
         LED_ON();
-       // waitForCycleCount(16000000); // wait
-       // LED_OFF();
-       // waitForCycleCount(16000000); // wait
+        waitForCycleCount(16000000); // wait
+        LED_OFF();
+        waitForCycleCount(16000000); // wait
     }
 }

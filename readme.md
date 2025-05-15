@@ -86,4 +86,34 @@ I just needed to slow down and pay closer attention to the details.
 
 **Next steps:**  
 - `Feeling a little stumped. On my next commit, I will hopefully be able to explain why. Right now the LED is stuck on.`
+
+### Date: 2025-05-14
+
+**Goal for the Day:**  
+- `Fix my timer code`
+
+**Actions Taken:**  
+- `Uncommented the lines that blinked the LED`
+
+**Technical Details:**  
+- `Read the datasheet to infer the default clock rate`
+
+**Outcome:**  
+- `Succesfully started blinking the LED`
+
+**Next steps:**  
+- `Refactor the code`
+- `Make a cleaner delay function that measures time rather than cycle count`
+
+**Reflection:**
+
+Unfortunately, I was frantically trying different things to fix my code last time, so my full path to discovery cannot
+by put on display for you. Commenting out the last 3 lines was an attempt to see if my timer interval was somehow very
+small: I thought I might detect a subtle difference between "ON" and "ON and OFF really fast" with my eyeballs. When I stepped
+into the debugger with fresh eyes today, I immediately saw my mistake.
+
+When I ctrl-Z'd to see what I did before, I found that I had been passing too large of a value to the delay function. I was mistakenly
+passing 160,000,000, but I explicitly reject values that exceed the maximum of the STRELOAD register (2^24 - 1, or 16,777,216). I read in 
+section 5.2.5.1 that the Precision Internal Oscillator is the default system clock after Power-on Reset (PON), and that it runs at 16 MHz, so I was aiming for that. I discovered that my edge condition checking was working - thereby breaking the delay logic - by placing a breakpoint on my second call to delay (in between the blinks) and using CCS's debugger.
+
 ---
