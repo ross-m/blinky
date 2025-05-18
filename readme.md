@@ -1,13 +1,17 @@
 # Project Journal
 
-## Project Title:
-`Blinky`
+## Project Title: `Blinky`
 
 ## Overview:
-- **Purpose:** `Blink the red LED in a loop. Familiarize myself with reading datasheets, baremetal programming, and basic microcontroller architecture.`
-- **Hardware:** TM4C123GXL evaluation board equipped with a TM4C123GH6MPI 32-bit ARM microcontroller unit
+- **Purpose:** `Blink the onboard LEDs without TI's HAL libraries. Familiarize myself with reading datasheets, baremetal programming, and basic microcontroller architecture.`
+- **Hardware:** `TM4C123GXL evaluation board equipped with a TM4C123GH6MPI 32-bit ARM microcontroller unit`
 - **Tools/Skills:** `CCS`, `C progamming`, `Baremetal programming`, `Register manipulation`, `Reading datasheets`, `GPIO peripherals` 
+- **References:**
+  - [TM4C123GH6PM datasheet](https://www.ti.com/lit/ds/symlink/tm4c123gh6pm.pdf)
+  - [TM4C123GXL evaluation board user's guide](https://www.ti.com/lit/ug/spmu296/spmu296.pdf)
 
+Note: I cleaned up the repository to exclude some files that CCS uses to build / configure the project. I did this to make it easy to identify the
+code I wrote myself. 
 ---
 
 ## Daily Log:
@@ -148,4 +152,37 @@ CPU instructions for the looping code, so we're unlikely to execute the masking 
 my purposes because the delay would be imperceptably small in the context of blinking an LED. Since each instruction in the loop probably takes no more than 
 a handful of clock cycles, and there are likely no more than a few such instructions, the delay is likely on the order of nanoseconds, ie (1 second / 16,000,000 cycles) = 6.25 e^-10 seconds per cycle * average 5 cycles per instruction * ~100 instructions between reads, ballpark conservative estimate) is on the order
 of 10^-9. I could probably get precise figures if I read the assembly and read the documentation for the instruction set, but that's way too deep for what I'm doing. Maybe some day.
+
+### Date: 2025-05-18
+
+**Goal for the Day:**  
+- `API-ify and refactor the project`
+
+**Actions Taken:**  
+- `Reorganized the file structure`
+- `Defined abstract APIs for the onboard LEDs and SysTick timer`
+
+**Technical Details:**  
+- `Defined an abstract 'Onboard LED module' which represents GPIO port F`
+- `Defined helper methods that allow you to enable and toggle specific onboard LEDs`
+
+**Outcome:**  
+- `Access to the onboard LEDs and systick timer is through my new functions`
+
+**Next steps:**  
+- `Improve timer usage`
+- `Use a custom build toolchain`
+
+**Reflection:**
+
+Now that everything is working, I decided it would be a good exercise in C programming and software development to define APIs for the peripherals I'm working on.
+To that end, I've split out the LED and SysTick calls into helper functions and cleaned up register definitions / type defs into their own header files. This includes
+adding support for the green and blue LEDs, since my original project only supported red.
+
+My next steps should be to improve the way I'm using the SysTick timer. I don't like polling because it is imprecise and wastes CPU cycles. I plan on doing some 
+background research to see what patterns are common.
+
+Additionally, I want to learn how to compile + link + flash the board myself. Right now I'm dependent on Code Composer Studio for that, and I want to do it 
+myself at least once to learn those skills.
+
 ---
